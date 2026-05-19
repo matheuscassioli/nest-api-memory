@@ -1,45 +1,43 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  // Mudamos para any[] para o TypeScript aceitar os objetos
-  private users: any[] = [];
+  constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+  ) { }
 
-  create(createUserDto: CreateUserDto) {
-    const newUser = {
-      id: Math.floor(Math.random() * 1000),
-      ...createUserDto,
-    };
-    this.users.push(newUser);
-    return newUser;
+  async create(createUserDto: CreateUserDto) {
+    const emailExists = await this.usersRepository.findOne({ where: { email: createUserDto.email } });
+    if (emailExists) {
+      throw new ConflictException('Este e-mail já está cadastrado!');
+    }
+
+    const newUser = this.usersRepository.create(createUserDto);
+    return await this.usersRepository.save(newUser);
   }
 
-  findAll() {
-    return this.users;
-  }
-
-  findOne(id: number) {
-    const user = this.users.find(u => u.id === Number(id));
-    if (!user) throw new NotFoundException('Usuário não encontrado');
+  async findOne(id: number) {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new Error(`Usuário com ID ${id} não foi encontrado`);
+    }
     return user;
   }
- 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    const userIndex = this.users.findIndex(u => u.id === Number(id));
-    if (userIndex === -1) throw new NotFoundException('Usuário não encontrado');
-
-    this.users[userIndex] = {
-      ...this.users[userIndex],
-      ...updateUserDto,
-    };
-
-    return this.users[userIndex];
+  async update(id: number, updateUserDto: any) {
+    await this.findOne(id);
+    await this.usersRepository.update(id, updateUserDto);
+    return this.findOne(id);
   }
-
-  remove(id: number) {
-    this.users = this.users.filter(u => u.id !== Number(id));
-    return { message: 'Removido com sucesso' };
+  async findAll() {
+    return await this.usersRepository.find();
+  }
+  async remove(id: number) {
+    await this.usersRepository.delete(id);
+    return { message: 'Usuário removido com sucesso' };
   }
 }
