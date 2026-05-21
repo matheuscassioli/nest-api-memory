@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -12,12 +13,21 @@ export class UsersService {
   ) { }
 
   async create(createUserDto: CreateUserDto) {
+
     const emailExists = await this.usersRepository.findOne({ where: { email: createUserDto.email } });
     if (emailExists) {
       throw new ConflictException('Este e-mail já está cadastrado!');
     }
+ 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+ 
+    const newUser = this.usersRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
 
-    const newUser = this.usersRepository.create(createUserDto);
+    // 4. Salva no banco de dados
     return await this.usersRepository.save(newUser);
   }
 

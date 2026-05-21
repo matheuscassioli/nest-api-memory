@@ -14,19 +14,19 @@
         }
 
         body {
-            background-color: #f8f9fa;
+            background-color: #121214;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: #333;
+            color: #e1e1e6;
         }
 
         .container {
-            background-color: #ffffff;
+            background-color: #202024;
             padding: 2.5rem;
             border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 400px;
         }
@@ -35,7 +35,7 @@
             margin-bottom: 1.5rem;
             font-size: 1.5rem;
             font-weight: 600;
-            color: #111;
+            color: #ffffff;
         }
 
         .form-group {
@@ -47,31 +47,32 @@
             margin-bottom: 0.5rem;
             font-size: 0.875rem;
             font-weight: 500;
-            color: #666;
+            color: #a8a8b3;
         }
 
         input {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #323238;
             border-radius: 6px;
             font-size: 1rem;
-            background-color: #fcfcfc;
+            background-color: #121214;
+            color: #ffffff;
             transition: all 0.2s ease;
         }
 
         input:focus {
             outline: none;
             border-color: #0066cc;
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+            background-color: #121214;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
         }
 
         button {
             width: 100%;
             padding: 0.75rem;
-            background-color: #111;
-            color: #fff;
+            background-color: #ffffff;
+            color: #121214;
             border: none;
             border-radius: 6px;
             font-size: 1rem;
@@ -81,7 +82,7 @@
         }
 
         button:hover {
-            background-color: #333;
+            background-color: #e1e1e6;
         }
 
         .message {
@@ -93,14 +94,16 @@
         }
 
         .success {
-            background-color: #e6f4ea;
-            color: #137333;
+            background-color: rgba(29, 201, 103, 0.1);
+            color: #1dc967;
+            border: 1px solid rgba(29, 201, 103, 0.2);
             display: block;
         }
 
         .error {
-            background-color: #fce8e6;
-            color: #c5221f;
+            background-color: rgba(247, 90, 90, 0.1);
+            color: #f75a5a;
+            border: 1px solid rgba(247, 90, 90, 0.2);
             display: block;
         }
     </style>
@@ -122,6 +125,11 @@
                 <input type="email" id="email" placeholder="Ex: matheus@dev.com">
             </div>
 
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" placeholder="No mínimo 6 caracteres">
+            </div>
+
             <button type="submit">Salvar Usuário</button>
         </form>
 
@@ -137,6 +145,7 @@
 
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
             messageDiv.className = 'message';
             messageDiv.style.display = 'none';
@@ -147,12 +156,12 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ name, email })
+                    body: JSON.stringify({ name, email, password })
                 });
 
                 const data = await response.json();
 
-                if (data.statusCode == 400) { 
+                if (data.statusCode == 400 || data.statusCode == 409) { 
                     messageDiv.textContent = data.message;
                     messageDiv.classList.add('error');
                     messageDiv.style.display = 'block';
@@ -162,13 +171,14 @@
                 if (response.ok) {
                     messageDiv.textContent = `Sucesso! Usuário criado com ID: ${data.id}`;
                     messageDiv.classList.add('success');
+                    messageDiv.style.display = 'block';
                     form.reset();
                 }
             }
             catch (error) {
-                console.error(error, '<--- Erro de conexão');
                 messageDiv.textContent = 'Erro de conexão. A API está rodando?';
                 messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
             }
         });
     </script>
