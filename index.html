@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Usuários</title>
+    <title>Sistema de Autenticação</title>
     <style>
         * {
             box-sizing: border-box;
@@ -79,10 +79,25 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s ease;
+            margin-top: 0.5rem;
         }
 
         button:hover {
             background-color: #e1e1e6;
+        }
+
+        .toggle-link {
+            display: block;
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #0066cc;
+            font-size: 0.875rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .toggle-link:hover {
+            text-decoration: underline;
         }
 
         .message {
@@ -112,40 +127,67 @@
 <body>
 
     <div class="container">
-        <h2>Cadastrar Usuário</h2>
+        <div id="registerSection">
+            <h2>Cadastrar Usuário</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regName">Nome Completo</label>
+                    <input type="text" id="regName" placeholder="Ex: Matheus Cassioli">
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">E-mail</label>
+                    <input type="email" id="regEmail" placeholder="Ex: matheus@dev.com">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Senha</label>
+                    <input type="password" id="regPassword" placeholder="No mínimo 6 caracteres">
+                </div>
+                <button type="submit">Salvar Usuário</button>
+            </form>
+            <a class="toggle-link" onclick="switchForm('login')">Já tem uma conta? Faça Login</a>
+        </div>
 
-        <form id="userForm">
-            <div class="form-group">
-                <label for="name">Nome Completo</label>
-                <input type="text" id="name" placeholder="Ex: Matheus Cassioli">
-            </div>
-
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" placeholder="Ex: matheus@dev.com">
-            </div>
-
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" placeholder="No mínimo 6 caracteres">
-            </div>
-
-            <button type="submit">Salvar Usuário</button>
-        </form>
+        <div id="loginSection" style="display: none;">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail</label>
+                    <input type="email" id="loginEmail" placeholder="Digite seu e-mail">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" placeholder="Digite sua senha">
+                </div>
+                <button type="submit">Entrar</button>
+            </form>
+            <a class="toggle-link" onclick="switchForm('register')">Não tem conta? Cadastre-se</a>
+        </div>
 
         <div id="responseMessage" class="message"></div>
     </div>
 
     <script>
-        const form = document.getElementById('userForm');
+        const registerSection = document.getElementById('registerSection');
+        const loginSection = document.getElementById('loginSection');
         const messageDiv = document.getElementById('responseMessage');
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+        function switchForm(formType) {
+            messageDiv.style.display = 'none';
+            messageDiv.className = 'message';
+            if (formType === 'login') {
+                registerSection.style.display = 'none';
+                loginSection.style.display = 'block';
+            } else {
+                registerSection.style.display = 'block';
+                loginSection.style.display = 'none';
+            }
+        }
 
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        document.getElementById('registerForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
 
             messageDiv.className = 'message';
             messageDiv.style.display = 'none';
@@ -153,15 +195,13 @@
             try {
                 const response = await fetch('http://localhost:3000/users', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password })
                 });
 
                 const data = await response.json();
 
-                if (data.statusCode == 400 || data.statusCode == 409) { 
+                if (data.statusCode == 400 || data.statusCode == 409) {
                     messageDiv.textContent = data.message;
                     messageDiv.classList.add('error');
                     messageDiv.style.display = 'block';
@@ -172,10 +212,46 @@
                     messageDiv.textContent = `Sucesso! Usuário criado com ID: ${data.id}`;
                     messageDiv.classList.add('success');
                     messageDiv.style.display = 'block';
-                    form.reset();
+                    document.getElementById('registerForm').reset();
                 }
+            } catch (error) {
+                messageDiv.textContent = 'Erro de conexão. A API está rodando?';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
             }
-            catch (error) {
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:3000/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.status === 401 || data.statusCode == 400) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.classList.add('error');
+                    messageDiv.style.display = 'block';
+                    return;
+                }
+
+                if (response.ok) {
+                    messageDiv.textContent = `Bem-vindo, ${data.name}! Login feito com sucesso.`;
+                    messageDiv.classList.add('success');
+                    messageDiv.style.display = 'block';
+                    document.getElementById('loginForm').reset();
+                }
+            } catch (error) {
                 messageDiv.textContent = 'Erro de conexão. A API está rodando?';
                 messageDiv.classList.add('error');
                 messageDiv.style.display = 'block';
