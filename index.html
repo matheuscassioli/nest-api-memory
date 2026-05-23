@@ -10,115 +10,137 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            background-color: #121214;
+            background-color: #0a0a0c;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: #e1e1e6;
+            color: #ededed;
+            padding: 1rem;
         }
 
         .container {
-            background-color: #202024;
-            padding: 2.5rem;
+            background-color: #121214;
+            padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            border: 1px solid #222226;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
             width: 100%;
-            max-width: 400px;
+            max-width: 360px;
+            overflow: hidden;
+        }
+
+        .fade-section {
+            animation: fadeInSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h2 {
             margin-bottom: 1.5rem;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 600;
             color: #ffffff;
+            letter-spacing: -0.02em;
         }
 
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.15rem;
         }
 
         label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.8rem;
             font-weight: 500;
-            color: #a8a8b3;
+            color: #9494a1;
         }
 
         input {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #323238;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid #26262b;
             border-radius: 6px;
-            font-size: 1rem;
-            background-color: #121214;
+            font-size: 0.9rem;
+            background-color: #161619;
             color: #ffffff;
             transition: all 0.2s ease;
         }
 
         input:focus {
             outline: none;
-            border-color: #0066cc;
-            background-color: #121214;
-            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
+            border-color: #3b82f6;
+            background-color: #161619;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         button {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.65rem;
             background-color: #ffffff;
-            color: #121214;
+            color: #0a0a0c;
             border: none;
             border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 0.9rem;
+            font-weight: 500;
             cursor: pointer;
             transition: background-color 0.2s ease;
             margin-top: 0.5rem;
         }
 
         button:hover {
-            background-color: #e1e1e6;
+            background-color: #e4e4e7;
         }
 
         .toggle-link {
             display: block;
             margin-top: 1.5rem;
             text-align: center;
-            color: #0066cc;
-            font-size: 0.875rem;
+            color: #9494a1;
+            font-size: 0.8rem;
             text-decoration: none;
             cursor: pointer;
+            transition: color 0.2s ease;
         }
 
         .toggle-link:hover {
-            text-decoration: underline;
+            color: #ffffff;
         }
 
         .message {
-            margin-top: 1.25rem;
-            padding: 0.75rem;
+            margin-top: 1.15rem;
+            padding: 0.65rem 0.75rem;
             border-radius: 6px;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             display: none;
+            font-weight: 500;
         }
 
         .success {
-            background-color: rgba(29, 201, 103, 0.1);
-            color: #1dc967;
-            border: 1px solid rgba(29, 201, 103, 0.2);
+            background-color: rgba(16, 185, 129, 0.06);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
             display: block;
         }
 
         .error {
-            background-color: rgba(247, 90, 90, 0.1);
-            color: #f75a5a;
-            border: 1px solid rgba(247, 90, 90, 0.2);
+            background-color: rgba(239, 68, 68, 0.06);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
             display: block;
         }
     </style>
@@ -127,40 +149,40 @@
 <body>
 
     <div class="container">
-        <div id="registerSection">
-            <h2>Cadastrar Usuário</h2>
+        <div id="registerSection" class="fade-section">
+            <h2 style="text-align: center;">Criar conta</h2>
             <form id="registerForm">
                 <div class="form-group">
                     <label for="regName">Nome Completo</label>
-                    <input type="text" id="regName" placeholder="Ex: Matheus Cassioli">
+                    <input type="text" id="regName" placeholder="Seu nome">
                 </div>
                 <div class="form-group">
                     <label for="regEmail">E-mail</label>
-                    <input type="email" id="regEmail" placeholder="Ex: matheus@dev.com">
+                    <input type="email" id="regEmail" placeholder="nome@exemplo.com">
                 </div>
                 <div class="form-group">
                     <label for="regPassword">Senha</label>
                     <input type="password" id="regPassword" placeholder="No mínimo 6 caracteres">
                 </div>
-                <button type="submit">Salvar Usuário</button>
+                <button type="submit">Cadastrar</button>
             </form>
-            <a class="toggle-link" onclick="switchForm('login')">Já tem uma conta? Faça Login</a>
+            <a class="toggle-link" onclick="switchForm('login')">Já tem uma conta? Conecte-se</a>
         </div>
 
-        <div id="loginSection" style="display: none;">
-            <h2>Login</h2>
+        <div id="loginSection" class="fade-section" style="display: none;">
+            <h2 style="text-align: center;">Entrar na conta</h2>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="loginEmail">E-mail</label>
-                    <input type="email" id="loginEmail" placeholder="Digite seu e-mail">
+                    <input type="email" id="loginEmail" placeholder="nome@exemplo.com">
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">Senha</label>
-                    <input type="password" id="loginPassword" placeholder="Digite sua senha">
+                    <input type="password" id="loginPassword" placeholder="Sua senha">
                 </div>
-                <button type="submit">Entrar</button>
+                <button type="submit">Acessar plataforma</button>
             </form>
-            <a class="toggle-link" onclick="switchForm('register')">Não tem conta? Cadastre-se</a>
+            <a class="toggle-link" onclick="switchForm('register')">Não tem uma conta? Começar</a>
         </div>
 
         <div id="responseMessage" class="message"></div>
@@ -174,12 +196,21 @@
         function switchForm(formType) {
             messageDiv.style.display = 'none';
             messageDiv.className = 'message';
+
             if (formType === 'login') {
                 registerSection.style.display = 'none';
                 loginSection.style.display = 'block';
+                // Força o reset da animação
+                loginSection.style.animation = 'none';
+                loginSection.offsetHeight; /* trigger reflow */
+                loginSection.style.animation = null;
             } else {
                 registerSection.style.display = 'block';
                 loginSection.style.display = 'none';
+                // Força o reset da animação
+                registerSection.style.animation = 'none';
+                registerSection.offsetHeight; /* trigger reflow */
+                registerSection.style.animation = null;
             }
         }
 
@@ -209,13 +240,13 @@
                 }
 
                 if (response.ok) {
-                    messageDiv.textContent = `Sucesso! Usuário criado com ID: ${data.id}`;
+                    messageDiv.textContent = `Sucesso! Usuário criado.`;
                     messageDiv.classList.add('success');
                     messageDiv.style.display = 'block';
                     document.getElementById('registerForm').reset();
                 }
             } catch (error) {
-                messageDiv.textContent = 'Erro de conexão. A API está rodando?';
+                messageDiv.textContent = 'Não foi possível conectar ao servidor de segurança.';
                 messageDiv.classList.add('error');
                 messageDiv.style.display = 'block';
             }
@@ -246,13 +277,13 @@
                 }
 
                 if (response.ok) {
-                    messageDiv.textContent = `Bem-vindo, ${data.name}! Login feito com sucesso.`;
+                    messageDiv.textContent = `Autenticação bem-sucedida. Redirecionando...`;
                     messageDiv.classList.add('success');
                     messageDiv.style.display = 'block';
                     document.getElementById('loginForm').reset();
                 }
             } catch (error) {
-                messageDiv.textContent = 'Erro de conexão. A API está rodando?';
+                messageDiv.textContent = 'Não foi possível conectar ao servidor de segurança.';
                 messageDiv.classList.add('error');
                 messageDiv.style.display = 'block';
             }
