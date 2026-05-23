@@ -14,9 +14,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: sua_senha_aqui
-          POSTGRES_DB: seu_banco_aqui
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: senha_dificil
+          POSTGRES_DB: meu_projeto
         ports:
           - 5432:5432
         options: >-
@@ -40,3 +40,9 @@ jobs:
 
       - name: Rodar Testes E2E
         run: npm run test:e2e
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USERNAME: admin
+          DB_PASSWORD: senha_dificil
+          DB_DATABASE: meu_projeto
