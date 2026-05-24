@@ -23,7 +23,7 @@ export class AuthService {
 
         if (!isPasswordValid) {
             throw new UnauthorizedException('E-mail ou senha incorretos!');
-        }
+        }   
 
         const payload = {
             sub: user.id,
