@@ -36,7 +36,7 @@ export class UsersService {
         id: true,
         name: true,
         email: true,
-        password: true, 
+        password: true,
       },
     });
   }
