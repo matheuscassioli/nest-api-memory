@@ -149,7 +149,7 @@
 <body>
 
     <div class="container">
-        <div id="registerSection" class="fade-section">
+        <div id="registerSection" class="fade-section" style="display: none;">
             <h2 style="text-align: center;">Criar conta</h2>
             <form id="registerForm">
                 <div class="form-group">
@@ -169,7 +169,7 @@
             <a class="toggle-link" onclick="switchForm('login')">Já tem uma conta? Conecte-se</a>
         </div>
 
-        <div id="loginSection" class="fade-section" style="display: none;">
+        <div id="loginSection" class="fade-section">
             <h2 style="text-align: center;">Entrar na conta</h2>
             <form id="loginForm">
                 <div class="form-group">
@@ -200,20 +200,22 @@
             if (formType === 'login') {
                 registerSection.style.display = 'none';
                 loginSection.style.display = 'block';
-                // Força o reset da animação
+
                 loginSection.style.animation = 'none';
                 loginSection.offsetHeight; /* trigger reflow */
                 loginSection.style.animation = null;
             } else {
                 registerSection.style.display = 'block';
                 loginSection.style.display = 'none';
-                // Força o reset da animação
                 registerSection.style.animation = 'none';
                 registerSection.offsetHeight; /* trigger reflow */
                 registerSection.style.animation = null;
             }
         }
 
+        // ==========================================
+        // CADASTRO (POST /users)
+        // ==========================================
         document.getElementById('registerForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const name = document.getElementById('regName').value;
@@ -240,10 +242,15 @@
                 }
 
                 if (response.ok) {
-                    messageDiv.textContent = `Sucesso! Usuário criado.`;
+                    messageDiv.textContent = `Usuário criado com sucesso! Redirecionando para o login...`;
                     messageDiv.classList.add('success');
                     messageDiv.style.display = 'block';
                     document.getElementById('registerForm').reset();
+
+                    // Altera suavemente para a tela de login após 1.5s
+                    setTimeout(() => {
+                        switchForm('login');
+                    }, 1500);
                 }
             } catch (error) {
                 messageDiv.textContent = 'Não foi possível conectar ao servidor de segurança.';
@@ -252,6 +259,9 @@
             }
         });
 
+        // ==========================================
+        // LOGIN (POST /auth/login)
+        // ==========================================
         document.getElementById('loginForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -259,6 +269,8 @@
 
             messageDiv.className = 'message';
             messageDiv.style.display = 'none';
+
+            console.log("1. Iniciando envio dos dados de autenticação...");
 
             try {
                 const response = await fetch('http://localhost:3000/auth/login', {
@@ -268,6 +280,7 @@
                 });
 
                 const data = await response.json();
+                console.log("2. Resposta recebida da API NestJS:", data);
 
                 if (response.status === 401 || data.statusCode == 400) {
                     messageDiv.textContent = data.message;
@@ -277,12 +290,28 @@
                 }
 
                 if (response.ok) {
+                    // 3. MUDANÇA CRUCIAL: O token nasce aqui na rota de LOGIN!
+                    const token = data.access_token || data.token;
+
+                    if (token) {
+                        localStorage.setItem('token', token);
+                        console.log("3. Token JWT guardado perfeitamente no localStorage.");
+                    } else {
+                        console.warn("Atenção: A resposta da API não contém propriedades conhecidas de token.");
+                    }
+
                     messageDiv.textContent = `Autenticação bem-sucedida. Redirecionando...`;
                     messageDiv.classList.add('success');
                     messageDiv.style.display = 'block';
                     document.getElementById('loginForm').reset();
+
+                    console.log("4. Ativando cronômetro de redirecionamento para dashboard.html...");
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
                 }
             } catch (error) {
+                console.error("Erro na comunicação fetch:", error);
                 messageDiv.textContent = 'Não foi possível conectar ao servidor de segurança.';
                 messageDiv.classList.add('error');
                 messageDiv.style.display = 'block';
