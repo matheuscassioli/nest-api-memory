@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .container {
+            background-color: #1e1e1e;
+            padding: 1.75rem;
+            border-radius: 10px;
+            border: 1px solid #333;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 720px;
+            overflow: hidden;
+        }
+
+        .fade-section {
+            animation: fadeInSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #444;
+            padding-bottom: 0.6rem;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            letter-spacing: -0.01em;
+        }
+
+        .btn-logout {
+            padding: 0.35rem 0.7rem;
+            background-color: #333;
+            color: #f8d7da;
+            border: 1px solid #dc3545;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: #dc3545;
+            color: #000;
+            border-color: #dc3545;
+        }
+
+        .filter {
+            margin-bottom: 1rem;
+        }
+
+        .filter label {
+            display: block;
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 0.25rem;
+        }
+
+        .filter input {
+            width: 100%;
+            padding: 0.4rem 0.5rem;
+            font-size: 0.85rem;
+            background-color: #333;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 4px;
+        }
+
+        .table-wrapper {
+            max-width: 100%;
+            max-height: 334px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border: 1px solid #3c3c3c;
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+            background-color: #1f1f1f;
+        }
+
+        th {
+            color: #aaa;
+            font-weight: 600;
+            padding: 0.6rem 0.75rem;
+            border-bottom: 2px solid #444;
+            background-color: #2a2a2a;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        td {
+            padding: 0.65rem 0.75rem;
+            border-bottom: 1px solid #333;
+            color: #d0d0d0;
+            vertical-align: middle;
+            font-size: 0.675rem;
+        }
+
+        tr:hover td {
+            background-color: #2f2f2f;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .user-email {
+            color: #aaa;
+        }
+
+        .actions-cell {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .btn-action {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            margin-left: 0.25rem;
+            transition: all 0.15s ease;
+        }
+
+        .btn-edit {
+            color: #6eaaff;
+            border-color: #3c628a;
+            background-color: #333;
+        }
+
+        .btn-edit:hover {
+            background-color: #6eaaff;
+            color: #000;
+            border-color: #6eaaff;
+        }
+
+        .btn-delete {
+            color: #f87171;
+            border-color: #5a2525;
+            background-color: #333;
+        }
+
+        .btn-delete:hover {
+            background-color: #f87171;
+            color: #000;
+            border-color: #f87171;
+        }
+
+        .loading-text {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            padding: 1.5rem 0;
+        }
+
+        .message {
+            margin-top: 1rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        .error {
+            background-color: #5a2525;
+            color: #f8d7da;
+            border: 1px solid #7a3535;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="fade-section">
+            <div class="header-actions">
+                <h2>Usuários do Sistema</h2>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+ 
+            <div class="filter">
+                <label for="filterSearch">Buscar</label>
+                <input type="text" id="filterSearch" placeholder="Buscar por nome ou e-mail..." oninput="filterTable()">
+            </div>
+
+            <div class="table-wrapper">
+                <table id="usersTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersContainer"></tbody>
+                </table>
+                <p class="loading-text" id="loadingState">Carregando dados protegidos...</p>
+            </div>
+
+            <div id="responseMessage" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        const usersTable = document.getElementById('usersTable');
+        const usersContainer = document.getElementById('usersContainer');
+        const loadingState = document.getElementById('loadingState');
+        const messageDiv = document.getElementById('responseMessage');
+        const filterInput = document.getElementById('filterSearch');
+
+        async function fetchUsers() {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                showError('Acesso não autorizado. Faça login primeiro.');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/users', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    showError('Sua sessão expirou. Redirecionando...');
+                    setTimeout(() => window.location.href = 'login.html', 2000);
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Erro ao carregar lista.');
+                }
+
+                loadingState.style.display = 'none';
+                usersTable.style.display = 'table';
+                renderUsers(data);
+            } catch (error) {
+                loadingState.style.display = 'none';
+                showError('Não foi possível carregar os dados do servidor.');
+            }
+        }
+
+        function renderUsers(users) {
+            if (users.length === 0) {
+                usersContainer.innerHTML = '<tr><td colspan="3" class="loading-text">Nenhum usuário encontrado.</td></tr>';
+                return;
+            }
+
+            usersContainer.innerHTML = '';
+
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.dataset.search = (user.name + ' ' + user.email).toLowerCase();
+
+                tr.innerHTML = `
+          <td class="user-name">${user.name}</td>
+          <td class="user-email">${user.email}</td>
+          <td class="actions-cell">
+            <button class="btn-action btn-edit" onclick="editUser('${user.id}', '${user.name}')">Editar</button>
+            <button class="btn-action btn-delete" onclick="deleteUser('${user.id}')">Excluir</button>
+          </td>
+        `;
+                usersContainer.appendChild(tr);
+            });
+
+            filterTable();  
+        }
+
+        function filterTable() {
+            const query = filterInput.value.toLowerCase().trim();
+
+            document.querySelectorAll('#usersContainer tr').forEach(tr => {
+                const search = tr.dataset.search || '';
+
+                if (query === '' || search.includes(query)) {
+                    tr.style.display = '';
+                } else {
+                    tr.style.display = 'none';
+                }
+            });
+        }
+
+        function editUser(id, currentName) {
+            console.log(`[Mock] Iniciando edição do ID numérico enviado: ${id}`);
+            const newName = prompt(`Editar nome do usuário (ID: ${id}):`, currentName);
+
+            if (newName && newName.trim() !== "") {
+                alert(`Sucesso! Pronto para disparar PUT /users/${id} com o novo nome: "${newName}"`);
+            }
+        }
+
+        function deleteUser(id) {
+            console.log(`[Mock] Iniciando exclusão do ID numérico enviado: ${id}`);
+            const confirmDelete = confirm(`Tem certeza que deseja remover o usuário com ID: ${id}?`);
+
+            if (confirmDelete) {
+                alert(`Sucesso! Pronto para disparar DELETE /users/${id}`);
+            }
+        }
+
+        function showError(message) {
+            messageDiv.textContent = message;
+            messageDiv.className = 'message error';
+            messageDiv.style.display = 'block';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchUsers);
+    </script>
+</body>
+
+</html>
