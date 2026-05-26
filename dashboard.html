@@ -107,7 +107,7 @@
 
         .table-wrapper {
             max-width: 100%;
-            max-height: 334px;
+            max-height: 298px;
             overflow-y: auto;
             overflow-x: hidden;
             border: 1px solid #3c3c3c;
@@ -226,7 +226,7 @@
                 <h2>Usuários do Sistema</h2>
                 <button class="btn-logout" onclick="logout()">Sair</button>
             </div>
- 
+
             <div class="filter">
                 <label for="filterSearch">Buscar</label>
                 <input type="text" id="filterSearch" placeholder="Buscar por nome ou e-mail..." oninput="filterTable()">
@@ -320,7 +320,7 @@
                 usersContainer.appendChild(tr);
             });
 
-            filterTable();  
+            filterTable();
         }
 
         function filterTable() {
@@ -346,15 +346,41 @@
             }
         }
 
-        function deleteUser(id) {
-            console.log(`[Mock] Iniciando exclusão do ID numérico enviado: ${id}`);
+        async function deleteUser(id) {
+            console.log(`[Mock] Iniciando exclusão do ID: ${id}`);
             const confirmDelete = confirm(`Tem certeza que deseja remover o usuário com ID: ${id}?`);
 
-            if (confirmDelete) {
-                alert(`Sucesso! Pronto para disparar DELETE /users/${id}`);
+            if (!confirmDelete) return;
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`http://localhost:3000/users/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    alert('Sessão expirada ou não autorizado.');
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Erro ao deletar usuário.');
+                }
+                alert('Usuário removido com sucesso!');
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+                alert(error.message);
             }
         }
-
         function showError(message) {
             messageDiv.textContent = message;
             messageDiv.className = 'message error';
