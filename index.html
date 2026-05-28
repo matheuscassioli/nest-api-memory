@@ -147,45 +147,46 @@
 </head>
 
 <body>
-
     <div class="container">
+
+        <div id="responseMessage" class="message"></div>
+
         <div id="registerSection" class="fade-section" style="display: none;">
-            <h2 style="text-align: center;">Criar conta</h2>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="regName">Nome Completo</label>
-                    <input type="text" id="regName" placeholder="Seu nome">
-                </div>
-                <div class="form-group">
-                    <label for="regEmail">E-mail</label>
-                    <input type="email" id="regEmail" placeholder="nome@exemplo.com">
-                </div>
-                <div class="form-group">
-                    <label for="regPassword">Senha</label>
-                    <input type="password" id="regPassword" placeholder="No mínimo 6 caracteres">
-                </div>
-                <button type="submit">Cadastrar</button>
-            </form>
-            <a class="toggle-link" onclick="switchForm('login')">Já tem uma conta? Conecte-se</a>
+            <h3 style="text-align: center; padding:1rem ">Criar conta</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="regName">Nome</label>
+                        <input type="text" id="regName" placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">E-mail</label>
+                        <input type="email" id="regEmail" placeholder="nome@exemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Senha</label>
+                        <input type="password" id="regPassword" placeholder="No mínimo 6 caracteres">
+                    </div>
+                    <button type="submit">Cadastrar</button>
+                </form>
+                <a class="toggle-link" onclick="switchForm('login')">Já tem uma conta? Conecte-se</a>
         </div>
 
         <div id="loginSection" class="fade-section">
-            <h2 style="text-align: center;">Entrar na conta</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">E-mail</label>
-                    <input type="email" id="loginEmail" placeholder="nome@exemplo.com">
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Senha</label>
-                    <input type="password" id="loginPassword" placeholder="Sua senha">
-                </div>
-                <button type="submit">Acessar plataforma</button>
-            </form>
-            <a class="toggle-link" onclick="switchForm('register')">Não tem uma conta? Começar</a>
+            <h3 style="text-align: center; padding:1rem ">Entrar na conta</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">E-mail</label>
+                        <input type="email" id="loginEmail" placeholder="nome@exemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Senha</label>
+                        <input type="password" id="loginPassword" placeholder="Sua senha">
+                    </div>
+                    <button type="submit">Acessar plataforma</button>
+                </form>
+                <a class="toggle-link" onclick="switchForm('register')">Não tem uma conta? Começar</a>
         </div>
 
-        <div id="responseMessage" class="message"></div>
     </div>
 
     <script>
@@ -290,7 +291,6 @@
                 }
 
                 if (response.ok) {
-                    // 3. MUDANÇA CRUCIAL: O token nasce aqui na rota de LOGIN!
                     const token = data.access_token || data.token;
 
                     if (token) {
