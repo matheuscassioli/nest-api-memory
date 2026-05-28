@@ -289,8 +289,7 @@
                     return;
                 }
 
-                if (response.ok) {
-                    // 3. MUDANÇA CRUCIAL: O token nasce aqui na rota de LOGIN!
+                if (response.ok) { 
                     const token = data.access_token || data.token;
 
                     if (token) {
