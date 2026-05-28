@@ -81,4 +81,54 @@ describe('Fluxo de Autenticação (e2e)', () => {
     expect(response.body).toHaveProperty('access_token');
     expect(typeof response.body.access_token).toBe('string');
   });
+
+  it('/users/:id (PATCH) - Deve atualizar o nome do usuário com sucesso', async () => {
+
+    const uniqueEmail = `update-${Date.now()}@dev.com`;
+    const userRes = await request(app.getHttpServer())
+      .post('/users')
+      .send({ name: 'Original', email: uniqueEmail, password: '123456' });
+
+    const userId = userRes.body.id;
+
+    const loginRes = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: uniqueEmail, password: '123456' });
+  
+    const token = loginRes.body.access_token;
+
+    const response = await request(app.getHttpServer())
+      .patch(`/users/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Nome Atualizado' })
+      .expect(200);
+
+    expect(response.body.name).toBe('Nome Atualizado');
+  });
+
+  it('/users/:id (DELETE) - Deve deletar o usuário com sucesso', async () => {
+
+    const uniqueEmail = `delete-${Date.now()}@dev.com`;
+    const userRes = await request(app.getHttpServer())
+      .post('/users')
+      .send({ name: 'Para Deletar', email: uniqueEmail, password: '123456' });
+
+    const userId = userRes.body.id;
+
+    const loginRes = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: uniqueEmail, password: '123456' });
+
+    await request(app.getHttpServer())
+      .delete(`/users/${userId}`)
+      .set('Authorization', `Bearer ${loginRes.body.access_token}`)
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: uniqueEmail, password: '123' })
+      .expect(401);
+  });
+
+
 });

@@ -193,7 +193,7 @@
         const registerSection = document.getElementById('registerSection');
         const loginSection = document.getElementById('loginSection');
         const messageDiv = document.getElementById('responseMessage');
-
+ 
         function switchForm(formType) {
             messageDiv.style.display = 'none';
             messageDiv.className = 'message';
@@ -213,10 +213,7 @@
                 registerSection.style.animation = null;
             }
         }
-
-        // ==========================================
-        // CADASTRO (POST /users)
-        // ==========================================
+ 
         document.getElementById('registerForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const name = document.getElementById('regName').value;
@@ -247,8 +244,7 @@
                     messageDiv.classList.add('success');
                     messageDiv.style.display = 'block';
                     document.getElementById('registerForm').reset();
-
-                    // Altera suavemente para a tela de login após 1.5s
+ 
                     setTimeout(() => {
                         switchForm('login');
                     }, 1500);
@@ -259,10 +255,7 @@
                 messageDiv.style.display = 'block';
             }
         });
-
-        // ==========================================
-        // LOGIN (POST /auth/login)
-        // ==========================================
+ 
         document.getElementById('loginForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -304,8 +297,7 @@
                     messageDiv.classList.add('success');
                     messageDiv.style.display = 'block';
                     document.getElementById('loginForm').reset();
-
-                    console.log("4. Ativando cronômetro de redirecionamento para dashboard.html...");
+ 
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
                     }, 1500);
