@@ -13,11 +13,19 @@ export class UsersController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
+
+  @UseGuards(AuthGuard)
+  @Get('test-api')
+  async testExternalApi() {
+    return await this.usersService.fetchDataFromExternalSource();
+  }
+
   @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
+
   @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -33,4 +41,6 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
+
+
 }

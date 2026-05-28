@@ -5,18 +5,19 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+ 
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'admin',      
-      password: 'senha_dificil', 
-      database: 'meu_projeto',     
-      autoLoadEntities: true,     
-      synchronize: true,          
+      username: 'admin',
+      password: 'senha_dificil',
+      database: 'meu_projeto',
+      autoLoadEntities: true,
+      synchronize: true,
     }),
     UsersModule,
     AuthModule
   ],
 })
-export class AppModule {}
+export class AppModule { }
