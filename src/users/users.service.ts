@@ -4,12 +4,15 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly httpService: HttpService,
   ) { }
 
   async create(createUserDto: CreateUserDto) {
@@ -48,7 +51,7 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, updateUserDto: any) {
+  async update(id: number, updateUserDto: any) { 
     await this.findOne(id);
     await this.usersRepository.update(id, updateUserDto);
     return this.findOne(id);
@@ -65,5 +68,25 @@ export class UsersService {
       status: 'success',
       ok: true
     };
+  }
+
+  async fetchDataFromExternalSource() {
+    const url = 'https://jsonplaceholder.typicode.com/posts/1';
+    console.log('Tentando buscar dados de:', url);
+
+    try {
+      const response = await firstValueFrom(this.httpService.get(url));
+      console.log('Resposta recebida com sucesso!', response);
+
+      return {
+        origem: 'API Externa',
+        titulo: response.data.title,
+        conteudo: response.data.body,
+        timestamp: new Date().toLocaleString()
+      };
+    } catch (error) {
+      console.error('Erro detalhado:', error.message);
+      throw error;
+    }
   }
 }

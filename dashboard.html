@@ -314,7 +314,7 @@
           <td class="user-email">${user.email}</td>
           <td class="actions-cell">
             <button class="btn-action btn-edit" onclick="editUser('${user.id}', '${user.name}')">Editar</button>
-            <button class="btn-action btn-delete" onclick="deleteUser('${user.id}')">Excluir</button>
+            <button class="btn-action btn-delete" onclick="deleteUser('${user.id}', '${user.name}')">Excluir</button>
           </td>
         `;
                 usersContainer.appendChild(tr);
@@ -337,18 +337,47 @@
             });
         }
 
-        function editUser(id, currentName) {
-            console.log(`[Mock] Iniciando edição do ID numérico enviado: ${id}`);
-            const newName = prompt(`Editar nome do usuário (ID: ${id}):`, currentName);
+        async function editUser(id, currentName) {
+
+            const newName = prompt(`Editar nome do usuário ${currentName}:`, currentName);
 
             if (newName && newName.trim() !== "") {
-                alert(`Sucesso! Pronto para disparar PUT /users/${id} com o novo nome: "${newName}"`);
+                const token = localStorage.getItem('token');
+
+                try {
+                    const response = await fetch(`http://localhost:3000/users/${id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name: newName })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.status === 401) {
+                        alert('Sessão expirada ou não autorizado.');
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Erro ao deletar usuário.');
+                    }
+
+                    alert('Usuário atualizado com sucesso!');
+                    window.location.reload();
+
+                } catch (error) {
+                    console.error('Erro na requisição:', error);
+                    alert(error.message);
+                }
             }
         }
 
-        async function deleteUser(id) {
-            console.log(`[Mock] Iniciando exclusão do ID: ${id}`);
-            const confirmDelete = confirm(`Tem certeza que deseja remover o usuário com ID: ${id}?`);
+        async function deleteUser(id, name) {
+
+            const confirmDelete = confirm(`Tem certeza que deseja remover o usuário ${name}?`);
 
             if (!confirmDelete) return;
 
@@ -360,7 +389,7 @@
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
-                    }
+                    },
                 });
 
                 const data = await response.json();
