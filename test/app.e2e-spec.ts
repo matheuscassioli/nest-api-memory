@@ -87,7 +87,7 @@ describe('Fluxo de Autenticação (e2e)', () => {
     const uniqueEmail = `update-${Date.now()}@dev.com`;
     const userRes = await request(app.getHttpServer())
       .post('/users')
-      .send({ name: 'Original', email: uniqueEmail, password: '123456' });
+      .send({ name: 'Original', email: uniqueEmail, password: '123456' , role: 'admin'});
 
     const userId = userRes.body.id;
 
@@ -111,7 +111,7 @@ describe('Fluxo de Autenticação (e2e)', () => {
     const uniqueEmail = `delete-${Date.now()}@dev.com`;
     const userRes = await request(app.getHttpServer())
       .post('/users')
-      .send({ name: 'Para Deletar', email: uniqueEmail, password: '123456' });
+      .send({ name: 'Para Deletar', email: uniqueEmail, password: '123456', role: 'admin' });
 
     const userId = userRes.body.id;
 
