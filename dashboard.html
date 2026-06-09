@@ -107,7 +107,7 @@
 
         .table-wrapper {
             max-width: 100%;
-            max-height: 298px;
+            height: 298px;
             overflow-y: auto;
             overflow-x: hidden;
             border: 1px solid #3c3c3c;
@@ -245,7 +245,8 @@
                         <tr>
                             <th>Nome</th>
                             <th>E-mail</th>
-                            <th style="text-align: right;">Ações</th>
+                            <th>Tipo</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="usersContainer"></tbody>
@@ -315,7 +316,7 @@
                 loadingState.style.display = 'none';
                 usersTable.style.display = 'table';
                 renderUsers(data);
-            } catch (error) {
+            } catch (error) { 
                 loadingState.style.display = 'none';
                 showError('Não foi possível carregar os dados do servidor.');
             }
@@ -337,14 +338,22 @@
                 const tr = document.createElement('tr');
                 tr.dataset.search = (user.name + ' ' + user.email).toLowerCase();
 
-                tr.innerHTML = `
-          <td class="user-name">${user.name}</td>
-          <td class="user-email">${user.email}</td>
-          <td class="actions-cell">
-            <button class="btn-action btn-edit" ${disabledAttr} onclick="editUser('${user.id}', '${user.name}')">Editar</button>
-            <button class="btn-action btn-delete" ${disabledAttr} onclick="deleteUser('${user.id}', '${user.name}')">Excluir</button>
-          </td>
-        `;
+                const isUserAdmin = user.role === 'admin';
+                const promoteButton = isAdmin && !isUserAdmin
+                    ? `<button class="btn-action" onclick="promoteUser('${user.id}')">Tornar Admin</button>`
+                    : '';
+
+                tr.innerHTML = ` 
+                <td class="user-name">${user.name}</td> 
+  <td class="user-email">${user.email}</td>
+   <td class="user-name">${isUserAdmin ? 'Sim' : 'Não'} </td> 
+  <td class="actions-cell">
+    ${promoteButton}
+    <button class="btn-action btn-edit" ${disabledAttr} onclick="editUser('${user.id}', '${user.name}')">Editar</button>
+    <button class="btn-action btn-delete" ${disabledAttr} onclick="deleteUser('${user.id}', '${user.name}')">Excluir</button>
+  </td>
+`;
+
                 usersContainer.appendChild(tr);
             });
 
@@ -353,20 +362,38 @@
 
         function filterTable() {
             const query = filterInput.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#usersContainer tr:not(#noResultsWarning)');
+            const thead = usersTable.querySelector('thead');
+            const existingWarning = document.getElementById('noResultsWarning');
+ 
+            if (existingWarning) existingWarning.remove();
 
-            document.querySelectorAll('#usersContainer tr').forEach(tr => {
+            let hasVisibleRows = false;
+
+            rows.forEach(tr => {
                 const search = tr.dataset.search || '';
 
                 if (query === '' || search.includes(query)) {
                     tr.style.display = '';
+                    hasVisibleRows = true;
                 } else {
                     tr.style.display = 'none';
                 }
             });
+
+            if (!hasVisibleRows && query !== '') {
+                thead.style.display = 'none';
+
+                const warning = document.createElement('tr');
+                warning.id = 'noResultsWarning';
+                warning.innerHTML = `<td colspan="4" class="loading-text">Nenhum usuário encontrado para "${query}"</td>`;
+                usersContainer.appendChild(warning);
+            } else {
+                thead.style.display = '';  
+            }
         }
 
         async function editUser(id, currentName) {
-
             const newName = prompt(`Editar nome do usuário ${currentName}:`, currentName);
 
             if (newName && newName.trim() !== "") {
@@ -438,6 +465,7 @@
                 alert(error.message);
             }
         }
+
         function showError(message) {
             messageDiv.textContent = message;
             messageDiv.className = 'message error';
