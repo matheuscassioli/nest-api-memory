@@ -15,6 +15,12 @@ export class UsersService {
     private readonly httpService: HttpService,
   ) { }
 
+  async updateRole(id: number, role: string) {
+    const user = await this.findOne(id);
+    user.role = role;
+    return await this.usersRepository.save(user);
+  }
+
   async create(createUserDto: CreateUserDto) {
     const emailExists = await this.usersRepository.findOne({ where: { email: createUserDto.email } });
     if (emailExists) {
@@ -44,6 +50,7 @@ export class UsersService {
       },
     });
   }
+
   async findOne(id: number) {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
@@ -52,7 +59,7 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, updateUserDto: any) { 
+  async update(id: number, updateUserDto: any) {
     await this.findOne(id);
     await this.usersRepository.update(id, updateUserDto);
     return this.findOne(id);

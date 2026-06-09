@@ -16,6 +16,14 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Patch(':id/promote')
+  @Roles('admin')
+  @UseGuards(AuthGuard, RolesGuard)
+
+  async promoteToAdmin(@Param('id') id: string) {
+    return await this.usersService.updateRole(Number(id), 'admin');
+  }
+
   @UseGuards(AuthGuard, RolesGuard)
   @Get('test-api')
   testExternalApi() {

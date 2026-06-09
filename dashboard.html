@@ -281,6 +281,26 @@
             }
         }
 
+        async function promoteUser(id) {
+            if (!confirm('Tem certeza que deseja promover este usuário a admin?')) return;
+
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:3000/users/${id}/promote`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('Usuário promovido com sucesso!');
+                window.location.reload();
+            } else {
+                alert('Erro ao promover usuário.');
+            }
+        }
+
         async function fetchUsers() {
             const token = localStorage.getItem('token');
 
@@ -337,14 +357,21 @@
                 const tr = document.createElement('tr');
                 tr.dataset.search = (user.name + ' ' + user.email).toLowerCase();
 
+                const isUserAdmin = user.role === 'admin';
+                const promoteButton = isAdmin && !isUserAdmin
+                    ? `<button class="btn-action" onclick="promoteUser('${user.id}')">Tornar Admin</button>`
+                    : '';
+
                 tr.innerHTML = `
-          <td class="user-name">${user.name}</td>
-          <td class="user-email">${user.email}</td>
-          <td class="actions-cell">
-            <button class="btn-action btn-edit" ${disabledAttr} onclick="editUser('${user.id}', '${user.name}')">Editar</button>
-            <button class="btn-action btn-delete" ${disabledAttr} onclick="deleteUser('${user.id}', '${user.name}')">Excluir</button>
-          </td>
-        `;
+  <td class="user-name">${user.name} ${isUserAdmin ? '👑' : ''}</td>
+  <td class="user-email">${user.email}</td>
+  <td class="actions-cell">
+    ${promoteButton}
+    <button class="btn-action btn-edit" ${disabledAttr} onclick="editUser('${user.id}', '${user.name}')">Editar</button>
+    <button class="btn-action btn-delete" ${disabledAttr} onclick="deleteUser('${user.id}', '${user.name}')">Excluir</button>
+  </td>
+`;
+
                 usersContainer.appendChild(tr);
             });
 
