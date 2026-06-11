@@ -93,7 +93,7 @@ export class UsersService {
         timestamp: new Date().toLocaleString()
       };
     } catch (error) {
-      console.error('Erro detalhado:', error.message);
+      // console.error('Erro detalhado:', error.message);
       throw error;
     }
   }
